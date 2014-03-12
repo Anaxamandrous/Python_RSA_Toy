@@ -1,0 +1,119 @@
+def isProbablyPrime(testNumber, confidence):
+    firstPrimes = 2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97
+    for fp in firstPrimes:
+        if (testNumber % 2 == 0):
+            return False
+
+    for a in range (2,101):
+        if (pow(a,testNumber-1,testNumber)!=1):
+            return False
+
+    nMinusOne = testNumber - 1
+    nMinusOneTemp = nMinusOne
+    s=0
+    while((nMinusOneTemp%2)==0):
+        s += 1
+        nMinusOneTemp /= 2
+    d=nMinusOneTemp
+    probablyPrime = True
+    counter = 0
+    a = 2
+    while ((counter < confidence) & (probablyPrime == True) & (a < testNumber)):
+        counter+=1
+        probablyPrime = False
+        if (pow (a, d, testNumber) == 1):
+            probablyPrime = True
+        else:
+            for r in range (0,s):
+                j = pow (a,d,testNumber)
+                for t in range (0,r):
+                    j = (j * pow (j,2,testNumber))%testNumber
+                if (j == nMinusOne):
+                #if ((a**((2**r)*d))%testNumber == nMinusOne):
+                    probablyPrime = True
+                    break
+        if (probablyPrime == True):
+            a+=1
+        else:
+            return False
+    return True
+
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def modinv(a, m):
+    g, x, y = egcd(a, m)
+    if g != 1:
+        raise Exception('modular inverse does not exist')
+    else:
+        return x % m
+
+import os
+
+os.system('clear')
+bitLength = 2048
+text=""
+p = 0
+q = 0
+while ((p == 0) | (q == 0)):
+    n = os.urandom(bitLength/16) # /16 because 8 bits per byte and 2 factors
+
+    m = int(n.encode('hex'),16)
+    if m%2 == 0:
+        m+=1
+
+    highBitValue = pow(2,(bitLength/2)-1)
+    secondBitValue = pow(2,(bitLength/2)-2)
+
+    if (m<highBitValue):
+        m+=highBitValue
+
+    if (m-highBitValue < secondBitValue):
+        m+=secondBitValue
+
+    if (isProbablyPrime(m,100) == True):
+        if p == 0:
+            p = m
+            print "p =",p
+        else:
+            q = m
+            print "q =",q
+print ""
+n = p * q
+print "n =", n
+print ""
+totient = (p-1)*(q-1)
+print "totient =", totient
+print ""
+if (totient%65537!=0):
+    e = 65537
+    print "e =", e
+    print ""
+    d = modinv(e,totient)
+    print "d = ", d
+    print ""
+else:
+    print "e undefined"
+    exit
+message = "THIS IS A TEST OF THE EMERGENCY BROADCAST SYSTEM.  THIS IS ONLY A TEST!"
+messageArray=list(message)
+messageValue = 0
+position = 0
+for char in messageArray:
+    messageValue += (ord(char)*pow (256,position))
+    position += 1
+print messageValue
+encrypted = pow (messageValue, e, n)
+print encrypted
+decrypted = pow (encrypted, d, n)
+print decrypted
+decryptedText = ""
+while (decrypted > 0):
+    letterValue = decrypted%256
+    decryptedText += chr(letterValue);
+    decrypted = (decrypted - letterValue)/256
+print decryptedText
