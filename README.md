@@ -1,0 +1,3 @@
+This is my first try using Github for program development.  The program in question is to be written in Python.  It will act as a chat program, able to listen for connection requests and to make connection requests.  When a connection is established, the chat program uses RSA to exchange an AES session key.  The chat is then encrypted using that session key.
+
+As one goal in writing this program is to learn the behind-the-scenes workings of RSA, AES, and eventually other cryptographic algorithms, this program will feature the minimum number of external dependencies possible given the skill set of the developer(s).
